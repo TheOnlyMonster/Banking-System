@@ -1,12 +1,12 @@
 #include "header.h"
-BankAccount::BankAccount(double balance){
-    while(balance<=0){
+BankAccount::BankAccount(double b){
+    while(b<=0){
         cout << "Please Enter a Valid Balance =========> ";
         cin >> balance;
     }
-    this->balance = balance;
-    accountID++;
-    type = "Basic";
+    this->balance = b;
+    this->accountID++;
+    this->type = "Basic";
 }
 BankAccount::BankAccount(){
     accountID++;
@@ -17,7 +17,7 @@ int BankAccount::getID(){
     return this->accountID;
 }
 double BankAccount::getBalance(){
-    return this->balance;
+    return balance;
 }
 int BankAccount::withdraw(double amount){
     if (amount <= this->balance && amount >= 0)
@@ -28,7 +28,7 @@ int BankAccount::withdraw(double amount){
     return -1;
 }
 string BankAccount::getType(){
-    return this->type;
+    return type;
 }
 int BankAccount::deposit(double amount){
     if (amount > 0){
@@ -65,11 +65,11 @@ int SavingsBankAccount::deposit(double amount){
     return -1;
 }
 Client::Client(string address,string name,int phonenumber){
+    int n;
+    double balance;
     this->address = address;
     this->name = name;
     this->phoneNumber = phonenumber;
-    int n;
-    double balance;
     cout << "What Type of Account Do You Like? (1) Basic (2) Saving || Type 1 or 2 =========> ";
     cin >> n;
     cout << "Please Enter the Starting Balance =========> ";
@@ -79,6 +79,17 @@ Client::Client(string address,string name,int phonenumber){
     }
     else if(n==2){
         bankAccount = new SavingsBankAccount(balance);
+    }
+}
+Client::Client(string address,string name,string phonenumber,string balance, char type){
+    this->address = address;
+    this->name = name;
+    this->phoneNumber = stoi(phonenumber);
+    if(type=='B'){
+        bankAccount = new BankAccount(stod(balance));
+    }
+    else if(type=='S'){
+        bankAccount = new SavingsBankAccount(stod(balance));
     }
 }
 string Client::getName(){
@@ -94,18 +105,19 @@ BankAccount *Client::getBankAccount(){
     return bankAccount;
 }
 BankingApplication::BankingApplication(){
+    readData();
     while(true){
         int n;
-        cout << "Welcome to FCAI Banking Application" << endl;
-        cout << "1. Create a New Account" << endl;
-        cout << "2. List Clients and Accounts" << endl;
-        cout << "3. Withdraw Money" << endl;
-        cout << "4. Deposit Money" << endl;
+        cout << "Welcome to FCAI Banking Application" << '\n';
+        cout << "1. Create a New Account" << '\n';
+        cout << "2. List Clients and Accounts" << '\n';
+        cout << "3. Withdraw Money" << '\n';
+        cout << "4. Deposit Money" << '\n';
+        cout << "0. Exit And Save" << '\n';
         cout << "Please Enter Choice =========> ";
         cin >> n;
         if(n==1){
             addClient();
-            cout << "An account was created with ID " << clients.back().getBankAccount()->getID() << " and Starting Balance " << clients.back().getBankAccount()->getBalance() << " L.E." << endl;
         }
         else if(n==2){
             listClients();
@@ -116,7 +128,10 @@ BankingApplication::BankingApplication(){
         else if(n==4){
             depositMoney();
         }
-        cout << "-------------------------------------------------------------------" << endl;
+        else if(n==0){
+            break;
+        }
+        cout << "-------------------------------------------------------------------" << '\n';
     }
 }
 void BankingApplication::depositMoney(){
@@ -124,47 +139,47 @@ void BankingApplication::depositMoney(){
         int client_index = getClientIndex();
         cout << "Please Enter The Amount to Deposit =========> ";
         cin >> amount;
-        while(clients[client_index].getBankAccount()->deposit(amount)==-1){
-            cout << "Sorry. This is less than what you can Deposit. " << endl;
+        while(client.at(client_index).getBankAccount()->deposit(amount)==-1){
+            cout << "Sorry. This is less than what you can Deposit. " << '\n';
             cout << "Please Enter The Amount to Deposit =========> ";
             cin >> amount;
         }
-        cout << "Thank you. " << endl;
-        cout << "Account ID: " << clients[client_index].getBankAccount()->getID() << endl;
-        cout << "New Balance: " << clients[client_index].getBankAccount()->getBalance() << endl;
+        cout << "Thank you. " << '\n';
+        cout << "Account ID: " << client.at(client_index).getBankAccount()->getID() << '\n';
+        cout << "New Balance: " << client.at(client_index).getBankAccount()->getBalance() << '\n';
 }
 void BankingApplication::withdrawMoney(){
         double amount;
         int client_index = getClientIndex();
         cout << "Please Enter The Amount to Withdraw =========> ";
         cin >> amount;
-        while(clients[client_index].getBankAccount()->withdraw(amount)==-1){
-            cout << "Sorry. This is more than what you can withdraw. " << endl;
+        while(client.at(client_index).getBankAccount()->withdraw(amount)==-1){
+            cout << "Sorry. This is more than what you can withdraw. " << '\n';
             cout << "Please Enter The Amount to Withdraw =========> ";
             cin >> amount;
         }
-        cout << "Thank you. " << endl;
-        cout << "Account ID: " << clients[client_index].getBankAccount()->getID() << endl;
-        cout << "New Balance: " << clients[client_index].getBankAccount()->getBalance() << endl;
+        cout << "Thank you. " << '\n';
+        cout << "Account ID: " << client.at(client_index).getBankAccount()->getID() << '\n';
+        cout << "New Balance: " << client.at(client_index).getBankAccount()->getBalance() << '\n';
 }
 int BankingApplication::getClientID(int id){
-    for (int i = 0; i < clients.size(); i++)
+    for (auto it = client.begin(); it != client.end(); it++)
     {
-        if(id==clients[i].getBankAccount()->getID()){
-            cout << "Account ID: " << clients[i].getBankAccount()->getID() << endl;
-            cout << "Acocunt Type: " << clients[i].getBankAccount()->getType() << endl;
-            cout << "Balance: " << clients[i].getBankAccount()->getBalance() << endl;
-            return i;
+        if(it->first==id){
+            cout << "Account ID: " << it->first << '\n';
+            cout << "Acocunt Type: " << it->second.getBankAccount()->getType() << '\n';
+            cout << "Balance: " << it->second.getBankAccount()->getBalance() << '\n';
+            return it->first;
         }
     }
     return -1;
 }
 int BankingApplication::getClientIndex(){
-    int id,client_index;
+    int id, client_index;
     cout << "Please Enter Account ID =========> ";
     cin >> id;
     while((client_index=getClientID(id))==-1){
-        cout << "Account ID Was Not Found " << endl;
+        cout << "Account ID Was Not Found " << '\n';
         cout << "Please Enter Account ID =========> ";
         cin >> id;
     }
@@ -173,22 +188,50 @@ int BankingApplication::getClientIndex(){
 void BankingApplication::addClient(){
     string name, address;
     int phone;
-    cout << "Please Enter Client Name =========> ";
-    cin.ignore();
-    getline(cin, name);
-    cin.ignore();
-    cout << "Please Enter Client Address =======> ";
-    getline(cin, address);
+    cout << "Please Enter Client First Name =========> ";
+    cin >> name;
+    cout << "Please Enter Client Address (Replace White Spaces with ,) =======> ";
+    cin >> address;
     cout << "Please Enter Client Phone =======> ";
     cin >> phone;
-    clients.push_back(Client(address, name, phone));
+    Client new_client(address, name, phone);
+    client.insert({new_client.getBankAccount()->getID(),new_client});
+    cout << "An account was created with ID " << client.rbegin()->second.getBankAccount()->getID() << " and Starting Balance " << client.rbegin()->second.getBankAccount()->getBalance() << " L.E." << '\n';
 }
 void BankingApplication::listClients(){
-    for (int i = 0; i < clients.size(); i++)
+    for (auto it = client.begin(); it != client.end(); it++)
     {
-        cout << "-------------------------- " << clients[i].getName() << " --------------------------" << endl;
-        cout << "Address: " << clients[i].getAddress() << ", Phone: " << clients[i].getPhoneNum() << endl;
-        cout << "Account ID: " << clients[i].getBankAccount()->getID() << " (" << clients[i].getBankAccount()->getType() << ")" << endl;
-        cout << "Balance: " << clients[i].getBankAccount()->getBalance() << endl;
+        cout << "-------------------------- " << it->second.getName() << " --------------------------" << '\n';
+        cout << "Address: " << it->second.getAddress() << ", Phone: " << it->second.getPhoneNum() << '\n';
+        cout << "Account ID: " << it->first << " (" << it->second.getBankAccount()->getType() << ")" << '\n';
+        cout << "Balance: " << it->second.getBankAccount()->getBalance() << '\n';
     }
+}
+void BankingApplication::readData(){
+    BankData.open("C:/Users/abdel/OneDrive/Desktop/My-Github-Projects/Banking-System/BankingSystemData.txt",ios::in);
+    string id;
+    while(BankData >> id){
+        string name, address, balance, type, phonenumber;
+        BankData >> name;
+        BankData >> balance;
+        BankData >> type;
+        BankData >> address;
+        BankData >> phonenumber;
+        Client existing_client(address, name, phonenumber, balance, type[0]);
+        client.insert(pair<int, Client>(stoi(id),existing_client));
+    }
+    BankData.close();
+}
+BankingApplication::~BankingApplication(){
+    BankData.open("C:/Users/abdel/OneDrive/Desktop/My-Github-Projects/Banking-System/BankingSystemData.txt",ios::out);
+    for (auto it = client.begin(); it != client.end(); it++)
+    {
+        BankData << it->first << '\n';
+        BankData << it->second.getName() << '\n';
+        BankData << it->second.getBankAccount()->getBalance() << '\n';
+        BankData << it->second.getBankAccount()->getType() << '\n';
+        BankData << it->second.getAddress() << '\n';
+        BankData << it->second.getPhoneNum() << '\n';
+    }
+    BankData.close();
 }

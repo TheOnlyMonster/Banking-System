@@ -4,9 +4,9 @@
 using namespace std;
 class BankAccount{
     protected:
-        double balance;
         string type;
         static int accountID;
+        double balance;
     public:
         string getType();
         BankAccount(double);
@@ -33,15 +33,18 @@ class Client{
         BankAccount *bankAccount;
     public:
         BankAccount *getBankAccount();
-        Client(string,string,int);
+        Client(string, string, int);
+        Client(string, string, string, string, char);
         string getName();
         string getAddress();
         int getPhoneNum();
 };
 class BankingApplication{
     private:
-        vector<Client> clients;
+        fstream BankData;
+        map<int, Client> client;
         void addClient();
+        void readData();
         void depositMoney();
         void withdrawMoney();
         void listClients();
@@ -49,6 +52,7 @@ class BankingApplication{
         int getClientIndex();
     public:
         BankingApplication();
+        ~BankingApplication();
 };
 
 #endif

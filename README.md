@@ -2,6 +2,8 @@
  This is a full banking system using OOP concepts and CPP
  
 This projects was one of my college assignments that I enjoyed making it and I learned from it how to use OOP concepts in the real world.
+I did not learn how to deal with database yet but, I created a text file that acts like a database and I used it to store and retrieve data from it.
+Inshallah as soon as I take Database subject I will extend the project and will add some new extra features.
 
 The banking application allows the user, i.e., the bank employee to create a bank account for a specific client. It allows him to list all the available 
 bank accounts. For each account, it allows him to display the account details, withdraw money and 
@@ -48,4 +50,5 @@ perform operations on a bank account.
 
 The following UML diagram describes the relationships between classes.
 
-![image](https://user-images.githubusercontent.com/92688600/215230289-d29facd7-e382-4939-a4e4-c1df9fed8211.png)
+![image](https://user-images.githubusercontent.com/92688600/215328142-0b4e823a-617c-4fa1-b9f7-b4ada0c6efd4.png)
+
